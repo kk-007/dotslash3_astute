@@ -16,27 +16,28 @@ This kiosk having an Alexa device would have an Alexa Skill named say, Hyderabad
 
 Passenger when taking their flight can link their account before hand by accessing the Alexa app and proceeding with Account linking through phone/email.
 Passenger when reaches or checks into the airport, they can proceed with interacting with the kiosk/device as follows:
-        i) User: Alexa, open Hyderabad Airport
-        ii) Alexa : Welcome to Hyderabad Airport. I can help you with flight information, commercial information, luggage queries and much more. How may I help you?
-        iii) User : I dont't know the GATE my flight departs from. Please help.
-        iv) Alexa : Sure. Can you tell me your flight number?
-        v) User : It's 6E-5990
-        vi) Alexa: Flight 6E-5990, from Hyderabad to Delhi, leaves from GATE 52, at 7:30 pm. Can I help you with any other thing ?
-        vii ) User: No. Thank you
-        vii) Alexa: Hope you have a safe journey today.
+1. User: Alexa, open Hyderabad Airport
+2. Alexa : Welcome to Hyderabad Airport. I can help you with flight information, commercial information, luggage queries and much more. How may I help you?
+3. User : I dont't know the GATE my flight departs from. Please help.
+4. Alexa : Sure. Can you tell me your flight number?
+5. User : It's 6E-5990
+6. Alexa: Flight 6E-5990, from Hyderabad to Delhi, leaves from GATE 52, at 7:30 pm. Can I help you with any other thing ?
+7. User: No. Thank you
+8. Alexa: Hope you have a safe journey today.
+
 This is one use case where the passenger faces issues with changing GATE numbers in case of modifications by the airport. Other problems which can be solved are:
 
-i) User : Alexa, open Delhi Airport
-ii) Alexa : Welcome to Delhi Airport. How can I help you today ?
-iii) User : I can't find my luggage on the conveyor belt. Can you help me ?
-iv) Alexa :  Sure, Can i know your PNR number ?
-v) User: LGERXYZ
-vi) Alexa: I can see, your baggage is still at the Bangalore Airport. We regret the inconvenience, but should I arrange for the baggage to reach you later?
-vii) User: Yes please.
-viii Alexa: Okay. I have processed the information and the rest of the details would be shared to you via email. Thank you.
+1. User : Alexa, open Delhi Airport
+2. Alexa : Welcome to Delhi Airport. How can I help you today ?
+3. User : I can't find my luggage on the conveyor belt. Can you help me ?
+4. Alexa :  Sure, Can i know your PNR number ?
+5. User: LGERXYZ
+6. Alexa: I can see, your baggage is still at the Bangalore Airport. We regret the inconvenience, but should I arrange for the baggage to reach you later?
+7. User: Yes please.
+8. Alexa: Okay. I have processed the information and the rest of the details would be shared to you via email. Thank you.
 
 
-We can ** classify the PAX issues/queries into different categories** for now like
+We can classify the PAX issues/queries into different categories** for now like
 
 Flight related issues
 Baggage Issues
@@ -60,7 +61,7 @@ Miscallenous
 
 4 - Oauth2.0 - Authentication Service
 
-5- AWS API Gateway - Build Microservices to serve specific purposes/queries
+5 - AWS API Gateway - Build Microservices to serve specific purposes/queries
 
 6 - Alexa Echo Show device as an installment on the Kiosk
 

@@ -1,0 +1,235 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "new delhi airport",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "HelloWorldIntent",
+                    "slots": [],
+                    "samples": [
+                        "hallo",
+                        "wie geht's dir",
+                        "sag hallo welt",
+                        "sag hallo"
+                    ]
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
+                {
+                    "name": "GetPNRNoIntent",
+                    "slots": [
+                        {
+                            "name": "one",
+                            "type": "letter_digit"
+                        },
+                        {
+                            "name": "second",
+                            "type": "letter_digit"
+                        },
+                        {
+                            "name": "third",
+                            "type": "letter_digit"
+                        },
+                        {
+                            "name": "fourth",
+                            "type": "letter_digit"
+                        },
+                        {
+                            "name": "fifth",
+                            "type": "letter_digit"
+                        },
+                        {
+                            "name": "sixth",
+                            "type": "letter_digit"
+                        }
+                    ],
+                    "samples": [
+                        "my p.n.r is {one} {second} {third} {fourth} {fifth} {sixth}",
+                        "{one} {second} {third} {fourth} {fifth} {sixth}"
+                    ]
+                },
+                {
+                    "name": "GetFlightStatusIntent",
+                    "slots": [],
+                    "samples": [
+                        "is my flight on time",
+                        "is my flight delayed ",
+                        "i don't know my flight status",
+                        "which gate does my flight depart from",
+                        "what is my flight status"
+                    ]
+                }
+            ],
+            "types": [
+                {
+                    "name": "PNR_No_Slot_type",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "abcdef"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "a.b.c.d.e.f"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "letter_digit",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "z."
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "y."
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "x."
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "w."
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "v"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "u"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "t"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "s"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "r"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "q"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "p"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "o"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "n"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "m"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "l"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "k"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "j"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "i"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "h"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "g"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "f"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "e"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "d"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "c"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "b"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "a"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

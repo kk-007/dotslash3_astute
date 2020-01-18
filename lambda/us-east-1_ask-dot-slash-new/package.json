@@ -1,0 +1,15 @@
+{
+  "name": "us-east-1_ask-dot-slash-new",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ask-sdk": "^2.7.0",
+    "i18next": "^19.0.3"
+  }
+}

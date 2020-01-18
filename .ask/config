@@ -1,0 +1,75 @@
+{
+  "deploy_settings": {
+    "default": {
+      "skill_id": "amzn1.ask.skill.8265bde5-924c-4615-b8b1-ac9bf79a7bff",
+      "was_cloned": false,
+      "merge": {},
+      "resources": {
+        "manifest": {
+          "eTag": "115ed46db8c46d708b03dd53560d3130"
+        },
+        "interactionModel": {
+          "en-US": {
+            "eTag": "2873d102c808f996e03f997e80e98063"
+          },
+          "en-GB": {
+            "eTag": "32bf6b18f7cb047d2d4a7612cda197db"
+          },
+          "en-CA": {
+            "eTag": "eda77365af8792760ee7d0d3f294dfbc"
+          },
+          "en-IN": {
+            "eTag": "239bede839c674c308c6a0b0df63862d"
+          },
+          "en-AU": {
+            "eTag": "078fddf3e7e7e559ed5a859b250f32eb"
+          },
+          "es-ES": {
+            "eTag": "26eaef6b62f5cfb3e13849eaeabc0604"
+          },
+          "es-MX": {
+            "eTag": "f16bddfe2962ba2d5c19052f4bddcb5f"
+          },
+          "es-US": {
+            "eTag": "e57145b2ad44db8c3c857b01cb375b1b"
+          },
+          "fr-FR": {
+            "eTag": "53c296b5a958059dc4dd13aac80ea869"
+          },
+          "fr-CA": {
+            "eTag": "6415f380f474d82b85861b435ea1e94f"
+          },
+          "ja-JP": {
+            "eTag": "47f10fa81b6d974cd2ea411287d26925"
+          },
+          "de-DE": {
+            "eTag": "6d32dbe4f007480e1d2940deeaa17d30"
+          },
+          "it-IT": {
+            "eTag": "756da2983621a504624c67a04baa9dd6"
+          },
+          "hi-IN": {
+            "eTag": "f7c0862bd719375677a91fe01e6eee4b"
+          },
+          "pt-BR": {
+            "eTag": "30f0026d61a15f0ad888e5faac8ba8d4"
+          }
+        },
+        "lambda": [
+          {
+            "alexaUsage": [
+              "custom/default"
+            ],
+            "arn": "arn:aws:lambda:us-east-1:444858095119:function:ask-dot-slash-new",
+            "awsRegion": "us-east-1",
+            "codeUri": "lambda/us-east-1_ask-dot-slash-new",
+            "functionName": "ask-dot-slash-new",
+            "handler": "index.handler",
+            "revisionId": "41031f5e-7c89-4fae-b768-932508f8164f",
+            "runtime": "nodejs12.x"
+          }
+        ]
+      }
+    }
+  }
+}

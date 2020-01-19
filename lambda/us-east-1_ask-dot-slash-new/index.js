@@ -18,10 +18,11 @@
 // sets up dependencies
 const Alexa = require('ask-sdk');
 const i18n = require('i18next');
+const API = require('./api.js');
 
-const constants={
-    SKILL_NAME:"New Delhi Airport",
-    PNR_Prompt:"Can I have your PNR number?"
+const constants = {
+  SKILL_NAME: "New Delhi Airport",
+  PNR_Prompt: "Can I have your PNR number?"
 }
 
 // core functionality for fact skill
@@ -30,84 +31,300 @@ const LaunchRequestHandler = {
     const request = handlerInput.requestEnvelope.request;
     // checks request type
     return request.type === 'LaunchRequest'
-    
-  },
-  handle(handlerInput) {
-    const speakOutput = "Welcome to delhi airport"
 
+  },
+   handle(handlerInput) {
+    const speakOutput = "Welcome to delhi airport. I can help you with flight status, luggage issue, rerouting and more. How may I help you?";
+
+    
     return handlerInput.responseBuilder
       .speak(speakOutput)
       // Uncomment the next line if you want to keep the session open so you can
       // ask for another fact without first re-opening the skill
-       .reprompt(constants.SKILL_NAME)
+      .reprompt(constants.SKILL_NAME)
       //.withSimpleCard(requestAttributes.t('SKILL_NAME'), speakOutput)
       .getResponse();
   },
 };
 
-const GetFlightStatusIntentHandler={
+const GetFlightStatusIntentHandler = {
 
-    canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request;
-        // checks request type
-        return request.type === 'IntentRequest' && request.intent.name==="GetFlightStatusIntent"
-        
-      },
-      handle(handlerInput) {
-        const speakOutput = "Okay. Can you please tell me your P.N.R Number ?"
-    
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    // checks request type
+    return request.type === 'IntentRequest' && (request.intent.name === "GetFlightStatusIntent")
+
+  },
+  handle(handlerInput) {
+    const speakOutput = "Okay. Can you please tell me your P.N.R Number ?"
+
+    return handlerInput.responseBuilder
+      .speak(speakOutput)
+      // Uncomment the next line if you want to keep the session open so you can
+      // ask for another fact without first re-opening the skill
+      .reprompt(constants.PNR_Prompt)
+      .withSimpleCard(constants.SKILL_NAME, speakOutput)
+      .getResponse();
+  },
+
+}
+
+
+const GetPNRNoIntentHandler = {
+
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    // checks request type
+    return request.type === 'IntentRequest' && request.intent.name === "GetPNRNoIntent"
+
+  },
+  async handle(handlerInput) {
+    const requestEnvelope = handlerInput.requestEnvelope;
+    let speakOutput = "Let me check"
+    let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+
+  
+
+    // let PNRNumber = Alexa.getSlotValue(requestEnvelope, "first")[0] + Alexa.getSlotValue(requestEnvelope, "second")[0] +
+    //   Alexa.getSlotValue(requestEnvelope, "third")[0] + Alexa.getSlotValue(requestEnvelope, "fourth")[0] + Alexa.getSlotValue(requestEnvelope, "fifth")[0] + Alexa.getSlotValue(requestEnvelope, "sixth")[0];
+
+    let PNRNumber =  Alexa.getSlotValue(requestEnvelope,"new");
+
+    PNRNumber = PNRNumber.split('.').join("");
+
+    sessionAttributes.PNRNumber = PNRNumber;
+
+
+
+    console.log("PNR:" + PNRNumber);
+    PNRNumber = PNRNumber.toUpperCase();
+    handlerInput.attributesManager.sessionAttributes = sessionAttributes;
+
+
+    if (sessionAttributes.isLuggageIntent === true) {
+      // api call
+
+      let data = await API.getBookingDetails(PNRNumber);
+      data = JSON.parse(data);
+      speakOutput+= data[""]
+
+      if(data["isLuggagemissed"]===false){
+        speakOutput = `Your Luggage is at ${data["luggage"]} belt number`;
         return handlerInput.responseBuilder
-          .speak(speakOutput)
-          // Uncomment the next line if you want to keep the session open so you can
-          // ask for another fact without first re-opening the skill
-          .reprompt(constants.PNR_Prompt)
-          .withSimpleCard(constants.SKILL_NAME, speakOutput)
-          .getResponse();
-      },
+            .speak(speakOutput)
+        // Uncomment the next line if you want to keep the session open so you can
+        // ask for another fact without first re-opening the skill
+        // .reprompt(requestAttributes.t('HELP_REPROMPT'))
+        .withSimpleCard(constants.SKILL_NAME, speakOutput)
+        .getResponse();
+
+      }
+
+      else {
+
+        speakOutput = " I think your luggage has been lost or left at previous airport. Would you like me to file a complain to the airline?"
+        
+        sessionAttributes.isLuggageLost = true;
+        handlerInput.attributesManager.sessionAttributes = sessionAttributes;
+
+        
+        
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+        // Uncomment the next line if you want to keep the session open so you can
+        // ask for another fact without first re-opening the skill
+        .reprompt("Should I lodge a complain?")
+        .withSimpleCard(constants.SKILL_NAME, speakOutput)
+        .getResponse();
+
+
+      }
+
+      
+     
+      
+
+
+
+     
+    }
+    //Db Call here
+
+    let data = await API.getPNRDetails(PNRNumber);
+    data = JSON.parse(data);
+    if (sessionAttributes.isGateIntent === true) {
+      // api call
+      speakOutput = "Your Terminal is " + data['Terminal'] + " and gate number is " + data['Gate_No'];
+      return handlerInput.responseBuilder
+        .speak(speakOutput)
+        // Uncomment the next line if you want to keep the session open so you can
+        // ask for another fact without first re-opening the skill
+        // .reprompt(requestAttributes.t('HELP_REPROMPT'))
+        .withSimpleCard(constants.SKILL_NAME, speakOutput)
+        .getResponse();
+    }
+
+
+    if (data["isDelayed"]) {
+      speakOutput = "Your flight is delayed and instead of departing at " + data['time1'] + ", it will now depart at " + data['time2'];
+    } else {
+      speakOutput = "No, your flight is on time and will depart at " + data['time'];
+    }
+
+
+    console.log("Data is " + JSON.stringify(data));
+    return handlerInput.responseBuilder
+      .speak(speakOutput)
+      // Uncomment the next line if you want to keep the session open so you can
+      // ask for another fact without first re-opening the skill
+      // .reprompt(requestAttributes.t('HELP_REPROMPT'))
+      .withSimpleCard(constants.SKILL_NAME, speakOutput)
+      .getResponse();
+  },
 
 }
 
 
-const GetPNRNoIntentHandler={
+//
 
-    canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request;
-        // checks request type
-        return request.type === 'IntentRequest' && request.intent.name==="GetPNRNoIntent"
-        
-      },
-      handle(handlerInput) {
-        const requestEnvelope = handlerInput.requestEnvelope;
-        const speakOutput = "Let me check"
+const AskBaggageIntentHandler = {
 
-        const PNRNumber = Alexa.getSlotValue(requestEnvelope,"first")+Alexa.getSlotValue(requestEnvelope,"second")+
-        Alexa.getSlotValue(requestEnvelope,"third")+Alexa.getSlotValue(requestEnvelope,"fourth")+Alexa.getSlotValue(requestEnvelope,"fifth")+Alexa.getSlotValue(requestEnvelope,"sixth");
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    // checks request type
+    return request.type === 'IntentRequest' && (request.intent.name==="MissingLuggageIntent")
 
-        console.log("PNR:"+PNRNumber);
+  },
+  async handle(handlerInput) {
+    const requestEnvelope = handlerInput.requestEnvelope;
+    let speakOutput = "Okay. Can you please tell me your P.N.R Number ?";
 
-
-        //Db Call here
+    let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    sessionAttributes.isLuggageIntent = true;
+    handlerInput.attributesManager.sessionAttributes = sessionAttributes;
 
 
-
-
-    
-        return handlerInput.responseBuilder
-          .speak(speakOutput)
-          // Uncomment the next line if you want to keep the session open so you can
-          // ask for another fact without first re-opening the skill
-          // .reprompt(requestAttributes.t('HELP_REPROMPT'))
-          .withSimpleCard(constants.SKILL_NAME, speakOutput)
-          .getResponse();
-      },
+    return handlerInput.responseBuilder
+      .speak(speakOutput)
+      // Uncomment the next line if you want to keep the session open so you can
+      // ask for another fact without first re-opening the skill
+      .reprompt("Can you please tell your PNR number?")
+      .withSimpleCard(constants.SKILL_NAME, speakOutput)
+      .getResponse();
+  },
 
 }
+
+
+
+
+const AskGateIntentHandler = {
+
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    // checks request type
+    return request.type === 'IntentRequest' && (request.intent.name === "AskGateIntent" )
+
+  },
+  async handle(handlerInput) {
+    const requestEnvelope = handlerInput.requestEnvelope;
+    let speakOutput = "Okay. Can you please tell me your P.N.R Number ?";
+
+    let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    sessionAttributes.isGateIntent = true;
+    handlerInput.attributesManager.sessionAttributes = sessionAttributes;
+
+
+    return handlerInput.responseBuilder
+      .speak(speakOutput)
+      // Uncomment the next line if you want to keep the session open so you can
+      // ask for another fact without first re-opening the skill
+      .reprompt("Can you please tell your PNR number?")
+      .withSimpleCard(constants.SKILL_NAME, speakOutput)
+      .getResponse();
+  },
+
+}
+
+
+
+
+
+
+// const MissingLuggageIntentHandler = {
+
+//   canHandle(handlerInput) {
+//     const request = handlerInput.requestEnvelope.request;
+//     // checks request type
+//     return request.type === 'IntentRequest' && request.intent.name === "MissingLuggageIntent"
+
+//   },
+//   async handle(handlerInput) {
+//     const requestEnvelope = handlerInput.requestEnvelope;
+//     let speakOutput = "Okay. Can you please tell me your P.N.R Number ?";
+
+//     let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+//     sessionAttributes.isLuggageIntent = true;
+//     handlerInput.attributesManager.sessionAttributes = sessionAttributes;
+
+
+//     return handlerInput.responseBuilder
+//       .speak(speakOutput)
+//       // Uncomment the next line if you want to keep the session open so you can
+//       // ask for another fact without first re-opening the skill
+//       .reprompt("Can you please tell your PNR number?")
+//       .withSimpleCard(constants.SKILL_NAME, speakOutput)
+//       .getResponse();
+//   },
+
+// }
+
+
+
+
+
+
+
+const YesIntentHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest' &&
+      request.intent.name === 'AMAZON.YesIntent';
+  },
+  async handle(handlerInput) {
+    //let speak="Goodbye"
+    
+
+    let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+   // if(sessionAttributes.isLuggageLost===true){
+      
+      //let sessionAttributes = handlerInput.attributesManager.sessionAttributes.getSessionAttributes()
+
+      let speak = "Okay. I have filled the complaint on your behalf and sent you an email for the same."
+      const email =  await API.sendComplainEmail(sessionAttributes.PNRNumber);
+      console.log(email)
+      return handlerInput.responseBuilder
+      .speak(speak)
+      //.reprompt(requestAttributes.t('HELP_REPROMPT'))
+      .getResponse();
+
+
+    //}
+    
+
+
+    return handlerInput.responseBuilder
+      .speak(speak)
+      //.reprompt(requestAttributes.t('HELP_REPROMPT'))
+      .getResponse();
+  },
+};
 
 const HelpHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
-    return request.type === 'IntentRequest'
-      && request.intent.name === 'AMAZON.HelpIntent';
+    return request.type === 'IntentRequest' &&
+      request.intent.name === 'AMAZON.HelpIntent';
   },
   handle(handlerInput) {
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
@@ -123,8 +340,8 @@ const FallbackHandler = {
   // so this handler will always be skipped in locales where it is not supported.
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
-    return request.type === 'IntentRequest'
-      && request.intent.name === 'AMAZON.FallbackIntent';
+    return request.type === 'IntentRequest' &&
+      request.intent.name === 'AMAZON.FallbackIntent';
   },
   handle(handlerInput) {
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
@@ -138,9 +355,9 @@ const FallbackHandler = {
 const ExitHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
-    return request.type === 'IntentRequest'
-      && (request.intent.name === 'AMAZON.CancelIntent'
-        || request.intent.name === 'AMAZON.StopIntent');
+    return request.type === 'IntentRequest' &&
+      (request.intent.name === 'AMAZON.CancelIntent' ||
+        request.intent.name === 'AMAZON.StopIntent');
   },
   handle(handlerInput) {
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
@@ -213,6 +430,10 @@ exports.handler = skillBuilder
     LaunchRequestHandler,
     GetFlightStatusIntentHandler,
     GetPNRNoIntentHandler,
+    AskGateIntentHandler,
+    YesIntentHandler,
+    AskBaggageIntentHandler,
+   // MissingLuggageIntentHandler,
     HelpHandler,
     ExitHandler,
     FallbackHandler,
@@ -220,7 +441,7 @@ exports.handler = skillBuilder
   )
   //.addRequestInterceptors(LocalizationInterceptor)
   .addErrorHandlers(ErrorHandler)
-  
+
   .lambda();
 
 // TODO: Replace this data with your own.
@@ -237,14 +458,13 @@ const deData = {
     FALLBACK_REPROMPT: 'Wie kann ich dir helfen?',
     ERROR_MESSAGE: 'Es ist ein Fehler aufgetreten.',
     STOP_MESSAGE: 'Auf Wiedersehen!',
-    FACTS:
-      [
-        'Ein Jahr dauert auf dem Merkur nur 88 Tage.',
-        'Die Venus ist zwar weiter von der Sonne entfernt, hat aber höhere Temperaturen als Merkur.',
-        'Venus dreht sich entgegen dem Uhrzeigersinn, möglicherweise aufgrund eines früheren Zusammenstoßes mit einem Asteroiden.',
-        'Auf dem Mars erscheint die Sonne nur halb so groß wie auf der Erde.',
-        'Jupiter hat den kürzesten Tag aller Planeten.',
-      ],
+    FACTS: [
+      'Ein Jahr dauert auf dem Merkur nur 88 Tage.',
+      'Die Venus ist zwar weiter von der Sonne entfernt, hat aber höhere Temperaturen als Merkur.',
+      'Venus dreht sich entgegen dem Uhrzeigersinn, möglicherweise aufgrund eines früheren Zusammenstoßes mit einem Asteroiden.',
+      'Auf dem Mars erscheint die Sonne nur halb so groß wie auf der Erde.',
+      'Jupiter hat den kürzesten Tag aller Planeten.',
+    ],
   },
 };
 
@@ -264,14 +484,13 @@ const enData = {
     FALLBACK_REPROMPT: 'What can I help you with?',
     ERROR_MESSAGE: 'Sorry, an error occurred.',
     STOP_MESSAGE: 'Goodbye!',
-    FACTS:
-      [
-        'A year on Mercury is just 88 days long.',
-        'Despite being farther from the Sun, Venus experiences higher temperatures than Mercury.',
-        'On Mars, the Sun appears about half the size as it does on Earth.',
-        'Jupiter has the shortest day of all the planets.',
-        'The Sun is an almost perfect sphere.',
-      ],
+    FACTS: [
+      'A year on Mercury is just 88 days long.',
+      'Despite being farther from the Sun, Venus experiences higher temperatures than Mercury.',
+      'On Mars, the Sun appears about half the size as it does on Earth.',
+      'Jupiter has the shortest day of all the planets.',
+      'The Sun is an almost perfect sphere.',
+    ],
   },
 };
 
@@ -315,14 +534,13 @@ const esData = {
     FALLBACK_REPROMPT: 'Como te puedo ayudar?',
     ERROR_MESSAGE: 'Lo sentimos, se ha producido un error.',
     STOP_MESSAGE: 'Adiós!',
-    FACTS:
-        [
-          'Un año en Mercurio es de solo 88 días',
-          'A pesar de estar más lejos del Sol, Venus tiene temperaturas más altas que Mercurio',
-          'En Marte el sol se ve la mitad de grande que en la Tierra',
-          'Jupiter tiene el día más corto de todos los planetas',
-          'El sol es una esféra casi perfecta',
-        ],
+    FACTS: [
+      'Un año en Mercurio es de solo 88 días',
+      'A pesar de estar más lejos del Sol, Venus tiene temperaturas más altas que Mercurio',
+      'En Marte el sol se ve la mitad de grande que en la Tierra',
+      'Jupiter tiene el día más corto de todos los planetas',
+      'El sol es una esféra casi perfecta',
+    ],
   },
 };
 
@@ -354,14 +572,13 @@ const frData = {
     FALLBACK_REPROMPT: 'Comment puis-je vous aider?',
     ERROR_MESSAGE: 'Désolé, une erreur est survenue.',
     STOP_MESSAGE: 'Au revoir!',
-    FACTS:
-        [
-          'Une année sur Mercure ne dure que 88 jours.',
-          'En dépit de son éloignement du Soleil, Vénus connaît des températures plus élevées que sur Mercure.',
-          'Sur Mars, le Soleil apparaît environ deux fois plus petit que sur Terre.',
-          'De toutes les planètes, Jupiter a le jour le plus court.',
-          'Le Soleil est une sphère presque parfaite.',
-        ],
+    FACTS: [
+      'Une année sur Mercure ne dure que 88 jours.',
+      'En dépit de son éloignement du Soleil, Vénus connaît des températures plus élevées que sur Mercure.',
+      'Sur Mars, le Soleil apparaît environ deux fois plus petit que sur Terre.',
+      'De toutes les planètes, Jupiter a le jour le plus court.',
+      'Le Soleil est une sphère presque parfaite.',
+    ],
   },
 };
 
@@ -385,14 +602,13 @@ const hiData = {
     HELP_REPROMPT: 'मैं आपकी किस प्रकार से सहायता कर सकती हूँ?',
     ERROR_MESSAGE: 'सॉरी, मैं वो समज नहीं पायी. क्या आप repeat कर सकते हैं?',
     STOP_MESSAGE: 'अच्छा bye, फिर मिलते हैं',
-    FACTS:
-      [
-        'बुध गृह में एक साल में केवल अठासी दिन होते हैं',
-        'सूरज से दूर होने के बावजूद, Venus का तापमान Mercury से ज़्यादा होता हैं',
-        'Earth के तुलना से Mars में सूरज का size तक़रीबन आधा हैं',
-        'सारे ग्रहों में Jupiter का दिन सबसे कम हैं',
-        'सूरज का shape एकदम गेंद आकार में हैं'
-      ],
+    FACTS: [
+      'बुध गृह में एक साल में केवल अठासी दिन होते हैं',
+      'सूरज से दूर होने के बावजूद, Venus का तापमान Mercury से ज़्यादा होता हैं',
+      'Earth के तुलना से Mars में सूरज का size तक़रीबन आधा हैं',
+      'सारे ग्रहों में Jupiter का दिन सबसे कम हैं',
+      'सूरज का shape एकदम गेंद आकार में हैं'
+    ],
   },
 };
 
@@ -412,14 +628,13 @@ const itData = {
     FALLBACK_REPROMPT: 'Come posso aiutarti?',
     ERROR_MESSAGE: 'Spiacenti, si è verificato un errore.',
     STOP_MESSAGE: 'A presto!',
-    FACTS:
-      [
-        'Sul pianeta Mercurio, un anno dura solamente 88 giorni.',
-        'Pur essendo più lontana dal Sole, Venere ha temperature più alte di Mercurio.',
-        'Su Marte il sole appare grande la metà che su la terra. ',
-        'Tra tutti i pianeti del sistema solare, la giornata più corta è su Giove.',
-        'Il Sole è quasi una sfera perfetta.',
-      ],
+    FACTS: [
+      'Sul pianeta Mercurio, un anno dura solamente 88 giorni.',
+      'Pur essendo più lontana dal Sole, Venere ha temperature più alte di Mercurio.',
+      'Su Marte il sole appare grande la metà che su la terra. ',
+      'Tra tutti i pianeti del sistema solare, la giornata più corta è su Giove.',
+      'Il Sole è quasi una sfera perfetta.',
+    ],
   },
 };
 
@@ -437,15 +652,14 @@ const jpData = {
     HELP_REPROMPT: 'どうしますか？',
     ERROR_MESSAGE: '申し訳ありませんが、エラーが発生しました',
     STOP_MESSAGE: 'さようなら',
-    FACTS:
-      [
-        '水星の一年はたった88日です。',
-        '金星は水星と比べて太陽より遠くにありますが、気温は水星よりも高いです。',
-        '金星は反時計回りに自転しています。過去に起こった隕石の衝突が原因と言われています。',
-        '火星上から見ると、太陽の大きさは地球から見た場合の約半分に見えます。',
-        '木星の<sub alias="いちにち">1日</sub>は全惑星の中で一番短いです。',
-        '天の川銀河は約50億年後にアンドロメダ星雲と衝突します。',
-      ],
+    FACTS: [
+      '水星の一年はたった88日です。',
+      '金星は水星と比べて太陽より遠くにありますが、気温は水星よりも高いです。',
+      '金星は反時計回りに自転しています。過去に起こった隕石の衝突が原因と言われています。',
+      '火星上から見ると、太陽の大きさは地球から見た場合の約半分に見えます。',
+      '木星の<sub alias="いちにち">1日</sub>は全惑星の中で一番短いです。',
+      '天の川銀河は約50億年後にアンドロメダ星雲と衝突します。',
+    ],
   },
 };
 
@@ -471,14 +685,13 @@ const ptData = {
     FALLBACK_REPROMPT: 'Eu posso contar fatos sobre o espaço. Como posso ajudar?',
     ERROR_MESSAGE: 'Desculpa, algo deu errado.',
     STOP_MESSAGE: 'Tchau!',
-    FACTS:
-      [
-        'Um ano em Mercúrio só dura 88 dias.',
-        'Apesar de ser mais distante do sol, Venus é mais quente que Mercúrio.',
-        'Visto de marte, o sol parece ser metade to tamanho que nós vemos da terra.',
-        'Júpiter tem os dias mais curtos entre os planetas no nosso sistema solar.',
-        'O sol é quase uma esfera perfeita.',
-      ],
+    FACTS: [
+      'Um ano em Mercúrio só dura 88 dias.',
+      'Apesar de ser mais distante do sol, Venus é mais quente que Mercúrio.',
+      'Visto de marte, o sol parece ser metade to tamanho que nós vemos da terra.',
+      'Júpiter tem os dias mais curtos entre os planetas no nosso sistema solar.',
+      'O sol é quase uma esfera perfeita.',
+    ],
   },
 };
 

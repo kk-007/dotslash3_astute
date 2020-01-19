@@ -37,7 +37,7 @@
                     "name": "GetPNRNoIntent",
                     "slots": [
                         {
-                            "name": "one",
+                            "name": "first",
                             "type": "letter_digit"
                         },
                         {
@@ -59,11 +59,14 @@
                         {
                             "name": "sixth",
                             "type": "letter_digit"
+                        },
+                        {
+                            "name": "new",
+                            "type": "PNR_No_Slot_type"
                         }
                     ],
                     "samples": [
-                        "my p.n.r is {one} {second} {third} {fourth} {fifth} {sixth}",
-                        "{one} {second} {third} {fourth} {fifth} {sixth}"
+                        "my p.n.r is {new}"
                     ]
                 },
                 {
@@ -76,12 +79,63 @@
                         "which gate does my flight depart from",
                         "what is my flight status"
                     ]
+                },
+                {
+                    "name": "AskGateIntent",
+                    "slots": [],
+                    "samples": [
+                        "i want to know gate number",
+                        "what is my gate number"
+                    ]
+                },
+                {
+                    "name": "MissingLuggageIntent",
+                    "slots": [],
+                    "samples": [
+                        "my luggage is missing",
+                        "where is my luggage",
+                        "i can't find my luggage"
+                    ]
+                },
+                {
+                    "name": "AMAZON.YesIntent",
+                    "samples": []
                 }
             ],
             "types": [
                 {
                     "name": "PNR_No_Slot_type",
                     "values": [
+                        {
+                            "name": {
+                                "value": "S B I T B V"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "H I A 2 9 6"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "B H I M G R"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Q U B I N G"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "T M G O P D"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "H D I F B H"
+                            }
+                        },
                         {
                             "name": {
                                 "value": "abcdef"
@@ -99,22 +153,22 @@
                     "values": [
                         {
                             "name": {
-                                "value": "z."
+                                "value": "z"
                             }
                         },
                         {
                             "name": {
-                                "value": "y."
+                                "value": "y"
                             }
                         },
                         {
                             "name": {
-                                "value": "x."
+                                "value": "x"
                             }
                         },
                         {
                             "name": {
-                                "value": "w."
+                                "value": "w"
                             }
                         },
                         {
@@ -129,7 +183,7 @@
                         },
                         {
                             "name": {
-                                "value": "t"
+                                "value": "t."
                             }
                         },
                         {

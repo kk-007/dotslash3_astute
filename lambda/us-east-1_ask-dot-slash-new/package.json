@@ -10,6 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "ask-sdk": "^2.7.0",
-    "i18next": "^19.0.3"
+    "i18next": "^19.0.3",
+    "request": "^2.88.0",
+    "circular-json": "^0.5.9",
+    "aws-sdk": "^2.606.0"
   }
 }
